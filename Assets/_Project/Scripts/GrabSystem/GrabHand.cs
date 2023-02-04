@@ -27,6 +27,7 @@ public class GrabHand : MonoBehaviour
         _grabAction.Enable();
     }
 
+    [Button]
     private void ReleaseActionOnperformed(InputAction.CallbackContext obj)
     {
         _isHolding = false;
@@ -34,7 +35,7 @@ public class GrabHand : MonoBehaviour
         _target.ReachedDestination();
     }
 
-    [Button]
+    
     private void Update()
     {
         if (_isHolding)

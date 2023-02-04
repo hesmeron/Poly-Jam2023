@@ -3,24 +3,20 @@ using Assets.Scripts;
 using Sirenix.OdinInspector;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Sliceable : MonoBehaviour
 {
-    [SerializeField]
-    private bool _isSolid = true;
-
+    public event Action<GameObject> onSlice;
     [SerializeField]
     private bool _reverseWindTriangles = false;
 
     [SerializeField]
-    private bool _useGravity = false;
-
-    [SerializeField]
     private bool _shareVertices = false;
 
-    [SerializeField]
-    private bool _smoothVertices = false;
-    
+    [SerializeField] 
+    private GrabTarget _grabTarget;
+
     [SerializeField]
     private Vector3 _testFrom;
     [SerializeField]
@@ -113,6 +109,8 @@ public class Sliceable : MonoBehaviour
         Vector3 newNormal = (normal  * 0.1f);
         slices[0].gameObject.transform.position += newNormal;
         slices[1].gameObject.transform.position -= newNormal;
+        onSlice?.Invoke(slices[0]);
+        onSlice?.Invoke(slices[1]);
 #if UNITY_EDITOR
             DestroyImmediate(gameObject);
         #else
@@ -152,7 +150,7 @@ public class Sliceable : MonoBehaviour
             float distance = PointToRayDistance(point, start, end);
             bool closeEnough = distance <= _sliceableRadius;
             bool inRange = (point - planeOrigin).magnitude <= direction.magnitude / 2;
-            Debug.Log($"Try slice {closeEnough} {inRange} { (point - planeOrigin).magnitude} {direction.magnitude / 2}");
+         
             if (closeEnough && inRange)
             {
                 Slice(plane, point, transformedStartingPoint, transformedNormal);

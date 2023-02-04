@@ -9,9 +9,20 @@ public class GrabTarget : MonoBehaviour
     private float _radius;
 
     [SerializeField] private GrabDestination _grabDestination;
-    
-    
-    
+
+    public GrabDestination GrabDestination
+    {
+        get => _grabDestination;
+        set => _grabDestination = value;
+    }
+
+    public float Radius
+    {
+        get => _radius;
+        set => _radius = value;
+    }
+
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
