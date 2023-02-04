@@ -32,8 +32,14 @@ public class Sliceable : MonoBehaviour
     private Vector3 _sliceAbleAreaEnd;
     [SerializeField] 
     private float _sliceableRadius;
-    
-    
+
+    private Vector3 _testCross;
+
+    public Vector3 SliceAbleAreaStart => transform.TransformPoint(_sliceAbleAreaStart);
+
+    public Vector3 SliceAbleAreaEnd => transform.TransformPoint(_sliceAbleAreaEnd);
+
+
     public bool ReverseWireTriangles
     {
         get
@@ -59,11 +65,12 @@ public class Sliceable : MonoBehaviour
     }
 
     private void OnDrawGizmos()
-    {
-        Gizmos.matrix = transform.localToWorldMatrix;
+    {               
         Gizmos.color = Color.blue;
+        Gizmos.matrix = transform.localToWorldMatrix;
         Gizmos.DrawLine(_sliceAbleAreaStart, _sliceAbleAreaEnd);
         Vector3 dir = _sliceAbleAreaEnd - _sliceAbleAreaStart;
+        /*
         for (int i = 0; i < 10; i++)
         {
             Vector3 pos = _sliceAbleAreaStart + (dir * i / 10);
@@ -71,7 +78,7 @@ public class Sliceable : MonoBehaviour
             Gizmos.DrawLine(pos, pos + (Vector3.down*_sliceableRadius));
             Gizmos.DrawLine(pos, pos + (Vector3.forward*_sliceableRadius));
             Gizmos.DrawLine(pos, pos + (Vector3.back*_sliceableRadius));
-        }
+        }*/
     }
 
     private void OnDrawGizmosSelected()
@@ -82,27 +89,36 @@ public class Sliceable : MonoBehaviour
         Gizmos.DrawLine(upperCorner, _triggerEnterTipPosition);
         Gizmos.DrawLine(upperCorner, _triggerExitTipPosition);
         Gizmos.DrawLine(_triggerExitTipPosition, _triggerEnterTipPosition);
+        if(DoSlice(_triggerEnterTipPosition, _triggerExitTipPosition, out float distance, out Vector3 point))
+        {
+            Gizmos.DrawSphere(point, 0.1f);
+            _testCross = point;
+        }
     }
 
-    public bool TrySlice(Vector3 origin, Vector3 end)
+    private void Start()
     {
-        if (IsSliceable(origin, end))
-        {
-            _triggerEnterTipPosition = origin + transform.position;
-            _triggerExitTipPosition = end + transform.position;
-            Slice();
-            return true;
-        }
+        SlicingSystem.Instance.Sliceables.Add(this);
+    }
 
-        return false;
+    public void Initialize(Vector3 start, Vector3 end, float radius = 0.5f)
+    {
+        _sliceAbleAreaStart = transform.InverseTransformPoint(start);
+        _sliceAbleAreaEnd = transform.InverseTransformPoint(end);
+        _sliceableRadius = radius;
     }
 
     [Button]
-    public void Slice()
+    private void TestSlice()
     {
-        Vector3 upperCorner = _triggerEnterTipPosition + Vector3.up;
-        Vector3 side1 = _triggerExitTipPosition - _triggerEnterTipPosition;
-        Vector3 side2 = _triggerExitTipPosition - upperCorner;
+        Slice(_triggerExitTipPosition,_triggerEnterTipPosition, _testCross);
+    }
+    
+    public void Slice(Vector3 start, Vector3 end, Vector3 point)
+    {
+        Vector3 upperCorner = start + Vector3.up;
+        Vector3 side1 = start - end;
+        Vector3 side2 = ((start + end) /3)- upperCorner;
         Vector3 normal = Vector3.Cross(side1, side2).normalized;
         Vector3 transformedNormal = ((Vector3)(transform.localToWorldMatrix.transpose * normal)).normalized;
         Vector3 transformedStartingPoint = transform.InverseTransformPoint(_triggerEnterTipPosition);
@@ -120,11 +136,11 @@ public class Sliceable : MonoBehaviour
             plane = plane.flipped;
         }
 
-        GameObject[] slices = Slicer.Slice(plane, gameObject);
-        Vector3 newNormal = (transformedNormal  * 0.1f);
-        slices[0].gameObject.transform.position -= newNormal;
-        slices[1].gameObject.transform.position += newNormal;
-        
+        GameObject[] slices = Slicer.Slice(plane, gameObject, point);
+        Vector3 newNormal = (transformedNormal  * 0.25f);
+        //slices[0].gameObject.transform.position += newNormal;
+        //slices[1].gameObject.transform.position -= newNormal;
+        SlicingSystem.Instance.Sliceables.Remove(this);
 #if UNITY_EDITOR
             DestroyImmediate(gameObject);
         #else
@@ -133,21 +149,26 @@ public class Sliceable : MonoBehaviour
         #endif
 
     }
-    private bool IsSliceable(Vector3 start, Vector3 end)
+    public bool DoSlice(Vector3 start, Vector3 end, out float distance, out Vector3 point)
     {
         Vector3 from = _sliceAbleAreaStart + transform.position;
         Vector3 to = _sliceAbleAreaEnd +  transform.position;
 
         Vector3 planeOrigin = (start + end) / 2;
+        planeOrigin = new Vector3(planeOrigin.x, 0, planeOrigin.z);
         Vector3 direction = end - start;
         Vector2 perpendicular = Vector2.Perpendicular(new Vector2(direction.x, direction.z));
         Vector3 normal = new Vector3(perpendicular.x, 1, perpendicular.y);
-        if(PointIntersectsAPlane(from, to, planeOrigin, normal, out Vector3 point))
+        if(PointIntersectsAPlane(from, to, planeOrigin, normal, out point))
         {
-            bool closeEnough = PointToRayDistance(point, start, end) <= _sliceableRadius;
+            _testCross = point;
+            distance = PointToRayDistance(point, start, end);
+            bool closeEnough = distance <= _sliceableRadius;
             bool inRange = (point - planeOrigin).magnitude <= direction.magnitude / 2;
             return closeEnough && inRange;
         }
+
+        distance = 0f;
         return false;
     }
 

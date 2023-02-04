@@ -13,20 +13,19 @@ namespace Assets.Scripts
         /// <param name="plane"></param>
         /// <param name="objectToCut"></param>
         /// <returns></returns>
-        public static GameObject[] Slice(Plane plane, GameObject objectToCut)
+        public static GameObject[] Slice(Plane plane, GameObject objectToCut, Vector3 crossPoint)
         {            
             //Get the current mesh and its verts and tris
             Mesh mesh = objectToCut.GetComponent<MeshFilter>().mesh;
             var a = mesh.GetSubMesh(0);
-            Sliceable sliceable = objectToCut.GetComponent<Sliceable>();
-
-            if(sliceable == null)
+            Sliceable originalSliceable = objectToCut.GetComponent<Sliceable>();
+            if(originalSliceable == null)
             {
                 throw new NotSupportedException("Cannot slice non sliceable object, add the sliceable script to the object or inherit from sliceable to support slicing");
             }
             
             //Create left and right slice of hollow object
-            SlicesMetadata slicesMeta = new SlicesMetadata(plane, mesh, sliceable.ReverseWireTriangles, sliceable.ShareVertices);            
+            SlicesMetadata slicesMeta = new SlicesMetadata(plane, mesh, originalSliceable.ReverseWireTriangles, originalSliceable.ShareVertices);            
 
             GameObject positiveObject = CreateMeshGameObject(objectToCut);
             positiveObject.name = string.Format("{0}_positive", objectToCut.name);
@@ -40,11 +39,28 @@ namespace Assets.Scripts
             positiveObject.GetComponent<MeshFilter>().mesh = positiveSideMeshData;
             negativeObject.GetComponent<MeshFilter>().mesh = negativeSideMeshData;
 
-            SetupCollidersAndRigidBodys(ref positiveObject, positiveSideMeshData);
-            SetupCollidersAndRigidBodys(ref negativeObject, negativeSideMeshData);
-
+            FillSlicableData(positiveObject, originalSliceable, crossPoint, plane.normal);
+            FillSlicableData(negativeObject, originalSliceable, crossPoint, -plane.normal);
             return new GameObject[] { positiveObject, negativeObject};
-        }        
+        }
+
+        private static void FillSlicableData(GameObject positiveObject, Sliceable originalSliceable, Vector3 crossPoint, Vector3 normal)
+        {
+            Sliceable sliceable = positiveObject.AddComponent<Sliceable>();
+            Vector3 pivot = crossPoint + normal;
+            Vector3 end = originalSliceable.SliceAbleAreaEnd;
+            Vector3 start = originalSliceable.SliceAbleAreaStart;
+            if (Vector3.Distance(pivot, start) <= Vector3.Distance(crossPoint, start))
+            {
+                sliceable.Initialize(crossPoint, start);
+            }
+            else
+            {
+                sliceable.Initialize(crossPoint, end);
+            }
+            sliceable.ReverseWireTriangles = originalSliceable.ReverseWireTriangles;
+
+        }
 
         /// <summary>
         /// Creates the default mesh game object.
@@ -56,12 +72,9 @@ namespace Assets.Scripts
             var originalMaterial = originalObject.GetComponent<MeshRenderer>().materials;
 
             GameObject meshGameObject = new GameObject();
-            Sliceable originalSliceable = originalObject.GetComponent<Sliceable>();
 
             meshGameObject.AddComponent<MeshFilter>();
             meshGameObject.AddComponent<MeshRenderer>();
-            Sliceable sliceable = meshGameObject.AddComponent<Sliceable>();
-            sliceable.ReverseWireTriangles = originalSliceable.ReverseWireTriangles;
 
             meshGameObject.GetComponent<MeshRenderer>().materials = originalMaterial;
 
