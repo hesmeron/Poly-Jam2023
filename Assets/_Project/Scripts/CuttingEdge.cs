@@ -26,6 +26,7 @@ public class CuttingEdge : MonoBehaviour
         Vector3 end = start + (transform.forward * _length);
         Vector3[] points = {start, end};
         _lineRenderer.SetPositions(points);
+        TrySlice();
     }
 
     [Button]

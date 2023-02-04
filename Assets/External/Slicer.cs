@@ -39,8 +39,8 @@ namespace Assets.Scripts
             positiveObject.GetComponent<MeshFilter>().mesh = positiveSideMeshData;
             negativeObject.GetComponent<MeshFilter>().mesh = negativeSideMeshData;
 
-            FillSlicableData(positiveObject, originalSliceable, crossPoint, plane.normal);
-            FillSlicableData(negativeObject, originalSliceable, crossPoint, -plane.normal);
+            //FillSlicableData(positiveObject, originalSliceable, crossPoint, plane.normal);
+            //FillSlicableData(negativeObject, originalSliceable, crossPoint, -plane.normal);
             return new GameObject[] { positiveObject, negativeObject};
         }
 

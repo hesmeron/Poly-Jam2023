@@ -8,7 +8,8 @@ public class SlicingSystem : MonoBehaviour
 {
     private static SlicingSystem _instance;
     public static SlicingSystem  Instance => _instance;
-    private readonly List<Sliceable> _sliceables = new List<Sliceable>();
+    [SerializeField]
+    private List<Sliceable> _sliceables = new List<Sliceable>();
 
     public List<Sliceable> Sliceables => _sliceables;
 
