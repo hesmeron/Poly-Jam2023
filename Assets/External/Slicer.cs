@@ -13,7 +13,7 @@ namespace Assets.Scripts
         /// <param name="plane"></param>
         /// <param name="objectToCut"></param>
         /// <returns></returns>
-        public static GameObject[] Slice(Plane plane, GameObject objectToCut, Vector3 crossPoint)
+        public static GameObject[] Slice(Plane plane, GameObject objectToCut, Vector3 crossPoint, Vector3 origin, Vector3 normal)
         {            
             //Get the current mesh and its verts and tris
             Mesh mesh = objectToCut.GetComponent<MeshFilter>().mesh;
@@ -25,7 +25,7 @@ namespace Assets.Scripts
             }
             
             //Create left and right slice of hollow object
-            SlicesMetadata slicesMeta = new SlicesMetadata(plane, mesh, originalSliceable.ReverseWireTriangles, originalSliceable.ShareVertices);            
+            SlicesMetadata slicesMeta = new SlicesMetadata(plane, mesh, originalSliceable.ReverseWireTriangles, originalSliceable.ShareVertices, origin, normal);            
 
             GameObject positiveObject = CreateMeshGameObject(objectToCut);
             positiveObject.name = string.Format("{0}_positive", objectToCut.name);

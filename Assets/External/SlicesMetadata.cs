@@ -40,6 +40,8 @@ namespace Assets.Scripts
         private Mesh _mesh;
         private bool _useSharedVertices = false;
         private bool _createReverseTriangleWindings = false;
+        private Vector3 _planeOrigin;
+        private Vector3 _normal;
         
         public Mesh PositiveSideMesh
         {
@@ -70,7 +72,7 @@ namespace Assets.Scripts
             }
         }
 
-        public SlicesMetadata(Plane plane, Mesh mesh, bool createReverseTriangleWindings, bool shareVertices)
+        public SlicesMetadata(Plane plane, Mesh mesh, bool createReverseTriangleWindings, bool shareVertices, Vector3 planeOrigin, Vector3 normal)
         {
             _positiveSideTriangles = new List<int>();
             _positiveSideVertices = new List<Vector3>();
@@ -82,6 +84,8 @@ namespace Assets.Scripts
             _negativeSideNormals = new List<Vector3>();
             _pointsAlongPlane = new List<Vector3>();
             _plane = plane;
+            _planeOrigin = planeOrigin;
+            _normal = normal;
             _mesh = mesh;
             _createReverseTriangleWindings = createReverseTriangleWindings;
             _useSharedVertices = shareVertices;
@@ -474,11 +478,11 @@ namespace Assets.Scripts
         /// <returns>Point of intersection</returns>
         private Vector3 GetRayPlaneIntersectionPointAndUv(Vector3 vertex1, Vector2 vertex1Uv, Vector3 vertex2, Vector2 vertex2Uv, out Vector2 uv)
         {
-            float distance = GetDistanceRelativeToPlane(vertex1, vertex2, out Vector3 pointOfIntersection);
-            uv = InterpolateUvs(vertex1Uv, vertex2Uv, distance);
-            return pointOfIntersection;
+            uv = new Vector2(0,0);
+            Sliceable.PointIntersectsAPlane(vertex1, vertex2, _planeOrigin, _normal, out Vector3 result);
+            return result;
         }
-
+        
         /// <summary>
         /// Computes the distance based on the plane.
         /// </summary>

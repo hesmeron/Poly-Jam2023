@@ -33,6 +33,6 @@ public class CuttingEdge : MonoBehaviour
     {
         Vector3 start = transform.position;
         Vector3 end = start + (transform.forward * _length);
-        SlicingSystem.Instance.TrySlice(start, end, out Sliceable sliceable);
+        SlicingSystem.Instance.TrySlice(start, end);
     }
 }

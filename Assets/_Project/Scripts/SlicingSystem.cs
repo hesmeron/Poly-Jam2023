@@ -22,36 +22,20 @@ public class SlicingSystem : MonoBehaviour
         _instance = this;
     }
     
-    public void TrySlice(Vector3 start, Vector3 end, out Sliceable closestValid)
+    public void TrySlice(Vector3 start, Vector3 end)
     {
-        closestValid = null;
-        float smallesDistance = 0f;
-        bool hasValidTarget = false;
-        Vector3 slicePoint = Vector3.zero;
-        foreach (var sliceable in _sliceables)       
+        List<Sliceable> toremove = new List<Sliceable>();
+        foreach (var sliceable in _sliceables)
         {
-            if (sliceable.DoSlice(start, end, out float distance, out Vector3 crossPoint))
+            if (sliceable.DoSlice(start, end))
             {
-                if (!hasValidTarget)
-                {
-                    hasValidTarget = true;
-                    closestValid = sliceable;
-                    slicePoint = crossPoint;
-                }
-                else if (smallesDistance > distance)
-                {
-                    smallesDistance = distance;
-                    closestValid = sliceable;
-                    slicePoint = crossPoint;
-                }
+                toremove.Add(sliceable);
             }
         }
 
-        if (hasValidTarget)
+        foreach (var sliceable in toremove)
         {
-            closestValid.Slice(start, end, slicePoint);
+            _sliceables.Remove(sliceable);
         }
     }
-
-
 }
