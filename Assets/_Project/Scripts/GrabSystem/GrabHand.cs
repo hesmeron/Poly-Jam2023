@@ -27,12 +27,28 @@ public class GrabHand : MonoBehaviour
         _grabAction.Enable();
     }
 
+    public void ForceSetTarget(GrabTarget target)
+    {
+        _target = target;
+        _isHolding = true;
+    }
+    
+    public void ForceRelease()
+    {
+        _target = null;
+        _isHolding = false;
+    }
+
     [Button]
     private void ReleaseActionOnperformed(InputAction.CallbackContext obj)
     {
-        _isHolding = false;
-        _showcase.SetActive(true);
-        _target.ReachedDestination();
+        if (_isHolding)
+        {
+            _isHolding = false;
+            _showcase.SetActive(true);
+            _target.OnRelease();
+        }
+
     }
 
     
@@ -40,7 +56,7 @@ public class GrabHand : MonoBehaviour
     {
         if (_isHolding)
         {
-            _target.transform.position = transform.position + (transform.forward * 0.3f);
+            _target.OnGrabPressed(transform);
         }
     }
 
@@ -53,6 +69,7 @@ public class GrabHand : MonoBehaviour
             if (GrabSystem.Instance.FindValidTarget(transform.position, out GrabTarget target))
             {
                 _target = target;
+                _target.OnGrab(this);
                 _isHolding = true;
             }
         }

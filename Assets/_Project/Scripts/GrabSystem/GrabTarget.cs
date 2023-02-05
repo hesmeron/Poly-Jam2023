@@ -1,20 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
-public class GrabTarget : MonoBehaviour
+public abstract class GrabTarget : MonoBehaviour
 {
     [SerializeField]
     private float _radius;
 
-    [SerializeField] private GrabDestination _grabDestination;
-
-    public GrabDestination GrabDestination
-    {
-        get => _grabDestination;
-        set => _grabDestination = value;
-    }
+    private GrabHand _hand;
 
     public float Radius
     {
@@ -22,14 +14,14 @@ public class GrabTarget : MonoBehaviour
         set => _radius = value;
     }
 
-
+    
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(transform.position, _radius);
     }
 
-    private void OnEnable()
+    private void Start()
     {
         GrabSystem.Instance.Targets.Add(this);
     }
@@ -43,8 +35,15 @@ public class GrabTarget : MonoBehaviour
         return Vector3.Distance(position, transform.position) <= _radius;
     }
 
-    public void ReachedDestination()
+    public void ForceRelease()
     {
-        _grabDestination.TryReach(this);
+        _hand.ForceRelease();
+    }
+    public virtual void OnRelease(){}
+    public virtual void OnGrabPressed(Transform transform){}
+
+    public virtual void OnGrab(GrabHand hand)
+    {
+        _hand = hand;
     }
 }

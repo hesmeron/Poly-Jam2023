@@ -28,9 +28,11 @@ public class CuttingDesk : GrabDestination
 
     private void SliceableOnonSlice(GameObject slice)
     {
-        GrabTarget target = slice.gameObject.AddComponent<GrabTarget>();
+        Grabable target = slice.gameObject.AddComponent<Grabable>();
         target.Radius = _grabTarget.Radius;
         target.GrabDestination = _destination;
+        Ingredient ingredient = slice.gameObject.AddComponent<Ingredient>();
+        ingredient.IngredientType = _grabTarget.GetComponent<Ingredient>().IngredientType;
         //_sliceable.onSlice -= SliceableOnonSlice;
 
     }

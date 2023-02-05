@@ -1,12 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.Serialization;
 using UnityEngine;
 
 public class CookingPot : GrabDestination
 {
-    [SerializeField] private Vector3 _start, _end;
+    [SerializeField] 
+    private Vector3 _start, _end;
     private GrabTarget _target;
+    [SerializeField]
+    private int[] _ingredientsWithCount;
+
+    private void Awake()
+    {
+        int length = Enum.GetNames(typeof(IngredientType)).Length;
+        _ingredientsWithCount = new int[length];
+    }
 
     private void OnDrawGizmosSelected()
     {
@@ -17,8 +27,26 @@ public class CookingPot : GrabDestination
     protected override void OnReach(GrabTarget grabTarget)
     {
         base.OnReach(grabTarget);
-        _target = grabTarget;
-        StartCoroutine(FallDownCoroutine());
+        if (grabTarget.TryGetComponent(out Ingredient ingredient))
+        {
+            _target = grabTarget;
+            StartCoroutine(FallDownCoroutine());
+        }
+        else if(grabTarget.TryGetComponent(out Recipe recipe))
+        {
+            if (recipe.FitsRequirements(_ingredientsWithCount))
+            {
+                Debug.Log("Hurray");
+            }
+            else
+            {
+                for(int i=0; i < _ingredientsWithCount.Length; i++)
+                {
+                    _ingredientsWithCount[i] = 0;
+                }
+            }
+        }
+
     }
 
     IEnumerator FallDownCoroutine()
@@ -34,6 +62,9 @@ public class CookingPot : GrabDestination
             yield return null;
             timePassed += Time.deltaTime;
         }
+
+        int index = (int) _target.GetComponent<Ingredient>().IngredientType;
+        _ingredientsWithCount[index]++;
         Destroy(_target.gameObject);
     }
 }

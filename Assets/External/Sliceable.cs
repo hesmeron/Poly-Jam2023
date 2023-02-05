@@ -1,9 +1,6 @@
 ﻿using System;
 using Assets.Scripts;
-using Sirenix.OdinInspector;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class Sliceable : MonoBehaviour
 {

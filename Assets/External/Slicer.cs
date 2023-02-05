@@ -25,13 +25,13 @@ namespace Assets.Scripts
             }
             
             //Create left and right slice of hollow object
-            SlicesMetadata slicesMeta = new SlicesMetadata(plane, mesh, originalSliceable.ReverseWireTriangles, originalSliceable.ShareVertices, origin, normal);            
+            SlicesMetadata slicesMeta = new SlicesMetadata(plane, mesh, origin, normal);            
 
             GameObject positiveObject = CreateMeshGameObject(objectToCut);
-            positiveObject.name = string.Format("{0}_positive", objectToCut.name);
+            positiveObject.name = objectToCut.name;
 
             GameObject negativeObject = CreateMeshGameObject(objectToCut);
-            negativeObject.name = string.Format("{0}_negative", objectToCut.name);
+            negativeObject.name =objectToCut.name;
 
             var positiveSideMeshData = slicesMeta.PositiveSideMesh;
             var negativeSideMeshData = slicesMeta.NegativeSideMesh;
