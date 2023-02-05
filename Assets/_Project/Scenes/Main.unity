@@ -802,7 +802,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 08d1e6b0b9d3d3442bf4fc196195367a, type: 2}
     - target: {fileID: 3052515673854943472, guid: 7ef2c78b6e5cffe449699ea1eaa654f3, type: 3}
+      propertyPath: _requirements.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3052515673854943472, guid: 7ef2c78b6e5cffe449699ea1eaa654f3, type: 3}
       propertyPath: _requirements.Array.data[0]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3052515673854943472, guid: 7ef2c78b6e5cffe449699ea1eaa654f3, type: 3}
+      propertyPath: _requirements.Array.data[1]
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3052515673854943472, guid: 7ef2c78b6e5cffe449699ea1eaa654f3, type: 3}
@@ -6634,7 +6642,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _radius: 0.5
   _offset: {x: 0, y: 0.4, z: 0}
-  _slicingPosition: {x: 0, y: 0.52, z: 0}
+  _slicingPosition: {x: 0, y: 1.57, z: 0}
   _destination: {fileID: 201154566}
 --- !u!1 &1369992598 stripped
 GameObject:
@@ -9741,6 +9749,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 08d1e6b0b9d3d3442bf4fc196195367a, type: 2}
+    - target: {fileID: 3052515673854943472, guid: 7ef2c78b6e5cffe449699ea1eaa654f3, type: 3}
+      propertyPath: _requirements.Array.size
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 4523000749524704857, guid: 7ef2c78b6e5cffe449699ea1eaa654f3, type: 3}
       propertyPath: _grabDestination
       value: 

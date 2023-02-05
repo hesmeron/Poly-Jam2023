@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -38,8 +34,7 @@ public class GrabHand : MonoBehaviour
         _target = null;
         _isHolding = false;
     }
-
-    [Button]
+    
     private void ReleaseActionOnperformed(InputAction.CallbackContext obj)
     {
         if (_isHolding)
@@ -59,8 +54,7 @@ public class GrabHand : MonoBehaviour
             _target.OnGrabPressed(transform);
         }
     }
-
-    [Button]
+    
     private void GrabActionOnPerformed(InputAction.CallbackContext obj)
     {
         if (!_isHolding)

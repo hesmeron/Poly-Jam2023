@@ -39,6 +39,8 @@ public class Recipe : MonoBehaviour
         
         _material.SetColor("_Tint", Color.green);
         _grabbedFromPlace.ForceRelease();
+        _grabbedFromPlace.PlaceBack();
+        _grabbedFromPlace.enabled = false;
         return true;
     }
 }

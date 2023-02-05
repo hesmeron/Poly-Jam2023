@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class CuttingEdge : MonoBehaviour
@@ -28,8 +24,7 @@ public class CuttingEdge : MonoBehaviour
         _lineRenderer.SetPositions(points);
         TrySlice();
     }
-
-    [Button]
+    
     private void TrySlice()
     {
         Vector3 start = transform.position;

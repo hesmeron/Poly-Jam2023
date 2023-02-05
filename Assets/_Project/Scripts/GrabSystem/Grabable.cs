@@ -11,7 +11,10 @@ public class Grabable : GrabTarget
     }
     public override void OnRelease()
     {
-        _grabDestination.TryReach(this);
+        if (!_grabDestination.TryReach(this))
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     public override void OnGrabPressed(Transform handTransform)

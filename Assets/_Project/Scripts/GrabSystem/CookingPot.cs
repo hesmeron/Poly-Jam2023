@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Sirenix.Serialization;
 using UnityEngine;
 
 public class CookingPot : GrabDestination
@@ -38,13 +36,12 @@ public class CookingPot : GrabDestination
             {
                 Debug.Log("Hurray");
             }
-            else
+     
+            for(int i=0; i < _ingredientsWithCount.Length; i++)
             {
-                for(int i=0; i < _ingredientsWithCount.Length; i++)
-                {
-                    _ingredientsWithCount[i] = 0;
-                }
+                _ingredientsWithCount[i] = 0;
             }
+            
         }
 
     }

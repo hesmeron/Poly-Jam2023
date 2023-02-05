@@ -17,12 +17,15 @@ public abstract class GrabDestination : MonoBehaviour
         Gizmos.DrawSphere(transform.position + _offset, _radius);
     }
 
-    public void TryReach(GrabTarget target)
+    public bool TryReach(GrabTarget target)
     {
         if (Vector3.Distance(target.transform.position, transform.position + _offset) <= _radius)
         {
             OnReach(target);
+            return true;
         }
+
+        return false;
     }
 
     protected virtual void OnReach(GrabTarget grabTarget)
