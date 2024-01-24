@@ -100,9 +100,10 @@ public class Sliceable : MonoBehaviour
         _sliceableRadius = radius;
     }
 
-    public void Slice(Plane plane, Vector3 crossPoint, Vector3 origin, Vector3 normal)
+    public void Slice(Vector3 from, Vector3 to, Vector3 normal)
     {
-        GameObject[] slices = Slicer.Slice(plane, gameObject, crossPoint, origin, normal);
+        /*
+        GameObject[] slices = Slicer.Slice(gameObject, from, to, Vector3.up);
         Vector3 newNormal = (normal  * 0.1f);
         slices[0].gameObject.transform.position += newNormal;
         slices[1].gameObject.transform.position -= newNormal;
@@ -114,67 +115,38 @@ public class Sliceable : MonoBehaviour
             Rigidbody rigidbody = slices[1].GetComponent<Rigidbody>();
             Destroy(gameObject);
         #endif
-
+*/
     }
 
     public bool DoSlice(Vector3 start, Vector3 end)
     {
         Vector3 from = _sliceAbleAreaStart + transform.position;
         Vector3 to = _sliceAbleAreaEnd + transform.position;
-        
-        Vector3 upperCorner = start + Vector3.up;
-        Vector3 side1 = start - end;
-        Vector3 side2 = ((start + end) /3)- upperCorner;
-        Vector3 normal = Vector3.Cross(side1, side2).normalized;
-        Vector3 transformedNormal = ((Vector3)(transform.localToWorldMatrix.transpose * normal)).normalized;
 
-        
         Vector3 planeOrigin = (start + end) / 2;
-        //planeOrigin += Vector3.up;
-        //planeOrigin = new Vector3(planeOrigin.x, 0, planeOrigin.z);
+        planeOrigin += Vector3.up;
+        planeOrigin = new Vector3(planeOrigin.x, 0, planeOrigin.z);
         _testOrigin = planeOrigin;
         Vector3 direction = end - start;
-        //Vector2 perpendicular = Vector2.Perpendicular(new Vector2(direction.x, direction.z));
-        //Vector3 normal = new Vector3(perpendicular.x, 0, perpendicular.y);
-
-        Vector3 transformedStartingPoint = transform.InverseTransformPoint(planeOrigin);
+        Vector2 perpendicular = Vector2.Perpendicular(new Vector2(direction.x, direction.z));
+        Vector3 normal = new Vector3(perpendicular.x, 0, perpendicular.y);
         
-        if (PointIntersectsAPlane(from, to, planeOrigin, normal, out Vector3 point))
+        if (Trigonometry.PointIntersectsAPlane(from, to, planeOrigin, normal, out Vector3 point))
         {
             _testCross = point;
-            Plane plane = new Plane();
-            plane.SetNormalAndPosition(transformedNormal, transformedStartingPoint);
             float distance = PointToRayDistance(point, start, end);
             bool closeEnough = distance <= _sliceableRadius;
             bool inRange = (point - planeOrigin).magnitude <= direction.magnitude / 2;
          
             if (closeEnough && inRange)
             {
-                Slice(plane, point, transformedStartingPoint, transformedNormal);
+                Slice(from, to, normal);
                 return true;
             }
         }
-
         return false;
     }
 
-    public static bool PointIntersectsAPlane(Vector3 from, Vector3 to, Vector3 planeOrigin, Vector3 normal, out Vector3 result)
-    {
-        Vector3 translation = to - from;
-        float dot = Vector3.Dot(normal, translation);
-        if (Mathf.Abs(dot) > Single.Epsilon)
-        {
-            Vector3 distance1 = from - planeOrigin;
-            float fac = -Vector3.Dot(normal, distance1) / dot;
-            translation = translation * fac;
-            result = from + translation;
-            return true;
-        }
-        
-        result = Vector3.zero;
-        return false;
-    }
-    
     public static float PointToRayDistance(Vector3 point, Vector3 origin, Vector3 target) {
         var ray = new Ray(origin, target - origin);
         var cross = Vector3.Cross(ray.direction, point - ray.origin);
